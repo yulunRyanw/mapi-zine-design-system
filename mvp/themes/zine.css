@@ -1,0 +1,599 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400..800&display=swap");
+
+/* zine: paper and ink. Everything is scoped to html[data-theme="zine"].
+
+   The system, in one place:
+   - Ground is warm paper. Ink is black. Bright fills always carry black ink.
+   - One depth system: a 2px ink outline. Things you can press or pick up (buttons, chips, cards, the poster,
+     a sheet laid over the screen) also cast a hard offset shadow, and pressing moves them into it.
+     Regions that only hold things (lists, panels, the bench) are outline only.
+   - Borders sit on the 16px grid on both sides; shadows hang outside it.
+   - Colour has jobs: pink acts (make, send, spend), black plays, white is the quiet secondary, red is danger,
+     yellow is energy, teal is right/done, lemon is the highlighter (selected, editing, pressed rows).
+   - Each tab floods its header with one colour: Make yellow, Profile pink, All games periwinkle.
+   - Type: Bricolage Grotesque (condensed and heavy for titles and numbers, regular width for buttons), Figtree for text.
+   - Messages is Apple's: its tokens are put back inside #app-messages, and only Mapi's own parts are themed. */
+
+/* ---------- tokens ---------- */
+html[data-theme="zine"] .phone,
+html[data-theme="zine"] #app-messages .sh-mb,
+html[data-theme="zine"] #app-messages .sh-panel,
+html[data-theme="zine"] #app-messages .sh-clip,
+html[data-theme="zine"] #app-messages .sh-taunts {
+  --paper: #f4f4f0; --z-ink: #000000; --pink: #ff90e8; --sun: #ffc900; --teal: #23a094; --peri: #90a8ed; --lemon: #f1f333; --coral: #ff7051;
+  --mute: #55534c; --mute2: #66655e; --redText: #b3260f; --tealText: #0e6b62; --paper2: #e4e4dc;
+  --z-out: 2px solid var(--z-ink); --z-sh: 4px 4px 0 var(--z-ink); --z-sh-s: 2px 2px 0 var(--z-ink); --z-sh-0: 0 0 0 var(--z-ink);
+  --z-press: transform .09s var(--ease), box-shadow .09s var(--ease), background-color .2s var(--ease), color .2s var(--ease), opacity .2s var(--ease);
+  --display: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
+  --font: 'Figtree', system-ui, -apple-system, sans-serif;
+
+  --bg: var(--paper); --sheetInk: #ffffff; --card: #ffffff; --card2: var(--paper2); --line: var(--z-ink);
+  --text: #000000; --grey8e: var(--mute); --greyC7: var(--mute); --greyD1: #2e2d29; --muted2: var(--mute2);
+  --blue: var(--pink); --blueSoft: #000000; --yellow: var(--sun); --green: var(--teal); --red: #dc341e;
+  --ink: #000000; --ink2: #000000; --white: #ffffff; --scrim: rgba(0,0,0,.45); --frost: rgba(0,0,0,.6); --toastBg: #ffffff;
+  --toy-blue: var(--peri); --toy-sun: var(--lemon); --toy-gum: var(--pink); --toy-leaf: var(--teal); --toy-tang: var(--sun); --toy-grape: var(--coral);
+  color: var(--text); font-family: var(--font);
+}
+/* Messages is Apple's app: its own tokens, back as they were */
+html[data-theme="zine"] #app-messages,
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-cliparts),
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-store) {
+  --bg: #000; --sheetInk: #1c1c1e; --card: #2b2b2e; --card2: #38383c; --line: #2a2a2e;
+  --text: #f5f5f7; --grey8e: #8e8e93; --greyC7: #c7c7cc; --greyD1: #d1d1d6; --muted2: #6e6e73;
+  --blue: #3f8cf2; --blueSoft: #bcd6f5; --yellow: #f4c531; --green: #35c759; --red: #ff453a;
+  --ink: #111114; --ink2: #111111; --white: #ffffff; --scrim: rgba(0,0,0,.4); --frost: rgba(20,20,22,.6); --toastBg: rgba(28,28,30,.96);
+  --font: 'Nunito', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif; --display: var(--font);
+  color: var(--text); font-family: var(--font);
+}
+
+html[data-theme="zine"] .phone ::selection { background: var(--lemon, #f1f333); color: #000; }
+html[data-theme="zine"] #app-messages ::selection { background: #3f8cf2; color: #fff; }
+html[data-theme="zine"] #app-messages :is(.sh-panel, .sh-clip) ::selection { background: #f1f333; color: #000; }
+
+/* ---------- the phone's own chrome ---------- */
+/* the status bar is iOS's: its face stays, only the ink follows the ground */
+html[data-theme="zine"] .statusbar { color: #000; font-family: 'Nunito', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif; }
+html[data-theme="zine"] .homebar { background: #000; }
+html[data-theme="zine"] .phone:has(> #app-messages:not([hidden])) .statusbar { color: #f5f5f7; }
+html[data-theme="zine"] .phone:has(> #app-messages:not([hidden])) .homebar { background: rgba(255,255,255,.55); }
+html[data-theme="zine"] .phone:has(> #app-messages:not([hidden]) .sh-clip) .statusbar { color: #000; }
+html[data-theme="zine"] .phone:has(> #app-messages:not([hidden]) .sh-panel.open) .homebar,
+html[data-theme="zine"] .phone:has(> #app-messages:not([hidden]) .sh-clip) .homebar,
+html[data-theme="zine"] .phone:has(> #layer-sheet .sheet.on) .homebar { background: #000; }
+html[data-theme="zine"] .phone:has(> #layer-sheet .sheet.on .sh-cliparts) .homebar,
+html[data-theme="zine"] .phone:has(> #layer-sheet .sheet.on .sh-store) .homebar { background: rgba(255,255,255,.55); }
+
+/* ---------- tab bar: paper, an ink rule, the Make button is the one pink thing ---------- */
+html[data-theme="zine"] .tabbar { background: var(--paper); border-top: var(--z-out); padding-top: 11px; }
+html[data-theme="zine"] .tabbar .tab { color: var(--mute); font-family: var(--display); font-weight: 700; font-size: 12px; gap: 4px; transition: color .2s var(--ease); }
+html[data-theme="zine"] .tabbar .tab.on { color: var(--z-ink); }
+html[data-theme="zine"] .tabbar .tab:active { transform: none; }
+html[data-theme="zine"] .tabbar .tab > svg { stroke-width: 2; transition: transform .09s var(--ease); }
+html[data-theme="zine"] .tabbar .tab:active > svg { transform: translate(1px, 2px); }
+html[data-theme="zine"] .tabbar .tab.on > svg { fill: var(--sun); }
+html[data-theme="zine"] .tabbar .tab[data-tab="profile"].on > svg { fill: var(--pink); }
+html[data-theme="zine"] .tabbar .tab.make .plus { width: 50px; height: 32px; margin: -4px 0 -1px; background: var(--pink); color: var(--z-ink); border: var(--z-out); box-shadow: var(--z-sh-s); transition: var(--z-press); }
+html[data-theme="zine"] .tabbar .tab.make:active .plus { transform: translate(2px, 2px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .tabbar .tab.make .plus svg { stroke-width: 2.6; }
+html[data-theme="zine"] .tabbar .tab.make .plus .mring { left: -5px; top: -7px; }
+/* while a game builds, the pill's ink outline is the progress ring: it draws itself round, and closes when the game is ready */
+html[data-theme="zine"] .tabbar .tab.make.building .plus,
+html[data-theme="zine"] .tabbar .tab.make.ready .plus,
+html[data-theme="zine"] .tabbar .tab.make.failed .plus { box-shadow: var(--z-sh-0); border-color: transparent; }
+html[data-theme="zine"] .mring { stroke-width: 2.5; }
+html[data-theme="zine"] .mring .tr { stroke: rgba(0,0,0,.2); }
+html[data-theme="zine"] .mring .pr { stroke: var(--z-ink); }
+html[data-theme="zine"] .tabbar .tab.make.building .tlabel { color: var(--z-ink); }
+html[data-theme="zine"] .tabbar .tab.make.ready .plus { background: var(--teal); }
+html[data-theme="zine"] .tabbar .tab.make.ready .mring .pr { stroke: var(--z-ink); }
+html[data-theme="zine"] .tabbar .tab.make.ready .tlabel { color: var(--tealText); }
+html[data-theme="zine"] .tabbar .tab.make.failed .plus { background: #fff; }
+html[data-theme="zine"] .tabbar .tab.make.failed .mring .pr { stroke: var(--red); }
+html[data-theme="zine"] .tabbar .tab.make.failed .tlabel { color: var(--redText); }
+
+/* ---------- bars ---------- */
+html[data-theme="zine"] .navbar { font-family: var(--display); font-weight: 700; font-size: 17px; }
+html[data-theme="zine"] .closebtn { width: 32px; height: 32px; background: #fff; color: var(--z-ink); border: var(--z-out); box-shadow: var(--z-sh-s); transition: var(--z-press); }
+html[data-theme="zine"] .closebtn:active { transform: translate(2px, 2px); box-shadow: var(--z-sh-0); background: #fff; }
+html[data-theme="zine"] .closebtn svg { stroke-width: 2.6; }
+html[data-theme="zine"] .navbar .lead, html[data-theme="zine"] .navbar .trail { top: 6px; }
+html[data-theme="zine"] .circ { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--z-ink); border: var(--z-out); box-shadow: var(--z-sh-s); transition: var(--z-press); }
+html[data-theme="zine"] .circ:active { transform: translate(2px, 2px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .circ svg { stroke-width: 2.6; }
+html[data-theme="zine"] .screen-title { font-family: var(--display); font-weight: 800; font-size: 46px; font-stretch: 78%; letter-spacing: -.02em; line-height: 1; padding: 2px 20px 14px; }
+
+/* ---------- type: Bricolage for titles, names, numbers and buttons; Figtree for text. No tracked capitals. ---------- */
+html[data-theme="zine"] .t-score { font-family: var(--display); font-weight: 800; font-stretch: 75%; font-size: 104px; letter-spacing: -.03em; line-height: .9; }
+html[data-theme="zine"] .t-huge { font-family: var(--display); font-weight: 800; font-stretch: 78%; letter-spacing: -.02em; }
+html[data-theme="zine"] .t-gtitle { font-family: var(--display); font-weight: 800; font-stretch: 82%; font-size: 32px; letter-spacing: -.015em; line-height: 1.04; }
+html[data-theme="zine"] .t-hero { font-family: var(--display); font-weight: 700; font-size: 20px; letter-spacing: -.005em; line-height: 1.2; }
+html[data-theme="zine"] .t-sheet { font-family: var(--display); font-weight: 700; }
+html[data-theme="zine"] .t-row { font-weight: 600; }
+html[data-theme="zine"] .t-body { font-weight: 500; }
+html[data-theme="zine"] .t-sub { font-weight: 500; }
+html[data-theme="zine"] .t-sec { font-family: var(--display); font-weight: 700; font-size: 19px; font-stretch: 90%; letter-spacing: 0; text-transform: none; color: var(--text); }
+html[data-theme="zine"] .t-tag { font-weight: 700; font-size: 12px; letter-spacing: 0; text-transform: none; }
+html[data-theme="zine"] .num { font-family: var(--display); }
+
+/* ---------- buttons: outline, hard shadow, press into the shadow ---------- */
+html[data-theme="zine"] .cta { height: 54px; border-radius: 16px; border: var(--z-out); box-shadow: var(--z-sh); background: var(--pink); color: var(--z-ink); font-family: var(--display); font-weight: 700; font-size: 17px; transition: var(--z-press); }
+html[data-theme="zine"] .cta:active { transform: translate(4px, 4px); box-shadow: var(--z-sh-0); filter: none; }
+html[data-theme="zine"] .cta svg { stroke-width: 2.4; }
+html[data-theme="zine"] .cta.blue { background: var(--pink); color: var(--z-ink); box-shadow: var(--z-sh); }
+html[data-theme="zine"] .cta.blue:active { box-shadow: var(--z-sh-0); }
+/* black plays. Its shadow is the same block, drawn as an outline so it shows against the ink */
+html[data-theme="zine"] .cta.white { background: var(--z-ink); color: #fff; box-shadow: 4px 4px 0 -2px #fff, 4px 4px 0 0 var(--z-ink); }
+html[data-theme="zine"] .cta.white:active { box-shadow: 0 0 0 -2px #fff, 0 0 0 0 var(--z-ink); }
+html[data-theme="zine"] .cta.dark { background: #fff; color: var(--z-ink); }
+html[data-theme="zine"] .cta.danger { background: var(--red); color: #fff; }
+html[data-theme="zine"] .cta.btn { height: 58px; border-radius: 18px; font-size: 18px; }
+html[data-theme="zine"] .cta.compact { height: 48px; border-radius: 16px; font-size: 16px; }
+html[data-theme="zine"] .cta.hero { height: 66px; border-radius: 22px; font-size: 21px; }
+html[data-theme="zine"] .ctas { gap: 14px; }
+html[data-theme="zine"] .textlinks { font-weight: 600; color: var(--z-ink); }
+html[data-theme="zine"] .textlinks button { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+html[data-theme="zine"] .followbtn { height: 34px; background: #fff; color: var(--z-ink); border: var(--z-out); box-shadow: var(--z-sh-s); font-family: var(--display); font-weight: 700; transition: var(--z-press); }
+html[data-theme="zine"] .followbtn:active { transform: translate(2px, 2px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .followbtn.on { background: var(--lemon); color: var(--z-ink); }
+
+/* ---------- lists, rows, panels: regions are outline only ---------- */
+html[data-theme="zine"] .sec { padding: 26px 20px 10px; }
+html[data-theme="zine"] .sec .trail { font-weight: 600; color: var(--z-ink); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+html[data-theme="zine"] .list { background: #fff; border: var(--z-out); padding: 0; overflow: hidden; }
+html[data-theme="zine"] .lrow { padding: 12px 14px; min-height: 50px; transition: background-color .15s var(--ease); }
+html[data-theme="zine"] button.lrow:active { transform: none; background: var(--lemon); }
+html[data-theme="zine"] .lrow + .lrow { border-top: var(--z-out); }
+html[data-theme="zine"] .lrow .chev { color: var(--z-ink); }
+html[data-theme="zine"] .panel { background: #fff; border: var(--z-out); }
+html[data-theme="zine"] .stat { background: #fff; border: var(--z-out); }
+html[data-theme="zine"] .stat b { font-family: var(--display); font-weight: 800; font-stretch: 80%; font-size: 26px; }
+html[data-theme="zine"] .stat span { font-weight: 600; color: var(--mute); }
+html[data-theme="zine"] .empty { font-weight: 500; color: var(--mute); }
+html[data-theme="zine"] .input { height: 50px; background: #fff; border: var(--z-out); color: var(--z-ink); font-weight: 600; transition: box-shadow .12s var(--ease); }
+html[data-theme="zine"] .input:focus { box-shadow: var(--z-sh); }
+html[data-theme="zine"] .input::placeholder { color: var(--mute2); font-weight: 500; }
+html[data-theme="zine"] .search { height: 46px; background: #fff; border: var(--z-out); color: var(--z-ink); transition: box-shadow .12s var(--ease); }
+html[data-theme="zine"] .search:focus-within { box-shadow: var(--z-sh); }
+html[data-theme="zine"] .search input { color: var(--z-ink); font-weight: 600; }
+html[data-theme="zine"] .search svg { stroke-width: 2.6; }
+
+/* ---------- tags, pills, chips ---------- */
+html[data-theme="zine"] .tag { height: 24px; padding: 0 9px; background: #fff; color: var(--z-ink); border: 1.5px solid var(--z-ink); font-weight: 700; font-size: 12px; letter-spacing: 0; text-transform: none; }
+html[data-theme="zine"] .tag.new { background: var(--sun); color: var(--z-ink); }
+html[data-theme="zine"] .tag.row { background: var(--lemon); color: var(--z-ink); }
+html[data-theme="zine"] .tag.dim { background: var(--z-ink); color: #fff; }
+html[data-theme="zine"] .pill { height: 36px; background: #fff; color: var(--z-ink); border: var(--z-out); box-shadow: var(--z-sh-s); font-weight: 700; transition: var(--z-press); }
+html[data-theme="zine"] .pill:active { transform: translate(2px, 2px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .pill.on { background: var(--lemon); color: var(--z-ink); transform: translate(2px, 2px); box-shadow: var(--z-sh-0); }
+/* a solid plate, never frost */
+html[data-theme="zine"] .energy { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--z-ink); border: var(--z-out); box-shadow: var(--z-sh-s); font-family: var(--display); font-weight: 700; }
+html[data-theme="zine"] .energy svg { color: var(--z-ink); }
+html[data-theme="zine"] .dc-energy, html[data-theme="zine"] .pf-energy { background: var(--sun); }
+/* the bolt is an outlined sticker wherever it appears */
+html[data-theme="zine"] .phone svg:has(> path[d^="M13 2 4 14"]) { fill: var(--sun); stroke: var(--z-ink); stroke-width: 2; overflow: visible; }
+html[data-theme="zine"] .dc-energy svg:has(> path[d^="M13 2 4 14"]),
+html[data-theme="zine"] .pf-energy svg:has(> path[d^="M13 2 4 14"]) { fill: #fff; }
+
+/* ---------- sheet: a sheet of paper laid on the screen. It floats clear of the edges so it can carry the outline and the shadow. ---------- */
+html[data-theme="zine"] .sheet, html[data-theme="zine"] .sheet.dark { left: 10px; right: 14px; bottom: 20px; max-height: 72%; padding: 16px 18px 22px; border-radius: var(--r-card); background: var(--paper); color: var(--z-ink); border: var(--z-out); box-shadow: var(--z-sh); transform: translateY(calc(100% + 44px)); }
+html[data-theme="zine"] .sheet.on { transform: none; }
+html[data-theme="zine"] .sheet .grab, html[data-theme="zine"] .sheet.dark .grab { background: var(--z-ink); width: 40px; height: 4px; margin: -4px auto 14px; }
+html[data-theme="zine"] .sheet .stitle { font-family: var(--display); font-weight: 800; font-stretch: 85%; font-size: 26px; letter-spacing: -.01em; line-height: 1.1; margin-bottom: 16px; }
+html[data-theme="zine"] .sheet .ssub, html[data-theme="zine"] .sheet:not(.dark) .ssub { font-weight: 500; font-size: 14px; color: var(--mute); margin: -10px 0 16px; }
+/* room for the hard shadows inside the scrolling body */
+html[data-theme="zine"] .sheet .sbody { margin: -2px -8px -8px -2px; padding: 2px 8px 8px 2px; }
+html[data-theme="zine"] .srow { background: #fff; border: var(--z-out); box-shadow: var(--z-sh-s); font-weight: 600; transition: var(--z-press); }
+html[data-theme="zine"] .srow + .srow { margin-top: 10px; }
+html[data-theme="zine"] .srow:active { transform: translate(2px, 2px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .srow.danger { color: var(--redText); }
+
+/* ---------- toast, notification ---------- */
+html[data-theme="zine"] .toast { background: #fff; color: var(--z-ink); border: var(--z-out); box-shadow: 3px 3px 0 var(--z-ink); font-weight: 600; }
+html[data-theme="zine"] .notif { right: 14px; background: #fff; color: var(--z-ink); border: var(--z-out); border-radius: 22px; box-shadow: var(--z-sh); -webkit-backdrop-filter: none; backdrop-filter: none; font-family: 'Figtree', system-ui, sans-serif; }
+html[data-theme="zine"] .notif .ic { background: var(--sun, #ffc900); border: 2px solid #000; border-radius: 12px; }
+html[data-theme="zine"] .notif b { font-weight: 700; }
+html[data-theme="zine"] .notif span { font-weight: 500; color: #55534c; }
+html[data-theme="zine"] .notif small { color: #55534c; }
+
+/* ---------- stage, cue, avatar ---------- */
+html[data-theme="zine"] .tapcue { background: var(--z-ink); -webkit-backdrop-filter: none; backdrop-filter: none; color: #fff; font-family: var(--display); font-weight: 700; height: 36px; padding: 0 16px; }
+html[data-theme="zine"] .avatar { border: 1.5px solid var(--z-ink); font-family: var(--display); font-weight: 800; color: #000; }
+
+/* =====================================================================================
+   discover: Home, first open, All games
+   ===================================================================================== */
+html[data-theme="zine"] .dc-page { padding: 6px 12px 0; }
+html[data-theme="zine"] .dc-hstage { border: var(--z-out); box-shadow: var(--z-sh); background: #fff; transition: transform .12s var(--ease), box-shadow .12s var(--ease); }
+/* while you play, the card stays pressed in */
+html[data-theme="zine"] .dc-playing .dc-hstage { transform: translate(4px, 4px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .dc-all svg { color: var(--z-ink); }
+html[data-theme="zine"] .dc-energy:active, html[data-theme="zine"] .dc-all:active, html[data-theme="zine"] .mk-energy:active, html[data-theme="zine"] .pf-energy:active { transform: translate(2px, 2px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .dc-energy, html[data-theme="zine"] .dc-all, html[data-theme="zine"] .mk-energy, html[data-theme="zine"] .pf-energy { transition: var(--z-press); }
+html[data-theme="zine"] .dc-send { bottom: 18px; }
+html[data-theme="zine"] .dc-hinfo { padding: 15px 6px 12px; }
+html[data-theme="zine"] .dc-hinfo .avatar { width: 34px; height: 34px; font-size: 15px; border-width: 2px; }
+html[data-theme="zine"] .dc-hinfo .t-hero { font-size: 22px; font-weight: 800; font-stretch: 88%; }
+html[data-theme="zine"] .dc-swipehint { color: var(--z-ink); font-weight: 600; }
+
+/* the result over a stage: a flood of yellow and one huge number, not frost */
+html[data-theme="zine"] .dc-result { background: var(--sun); -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--z-ink); padding: 20px 16px; }
+html[data-theme="zine"] .dc-rlabel, html[data-theme="zine"] .dc-rscore, html[data-theme="zine"] .dc-rbest { color: var(--z-ink); }
+html[data-theme="zine"] .dc-rlabel { font-family: var(--display); font-weight: 700; font-size: 18px; }
+html[data-theme="zine"] .dc-rbest { font-weight: 600; font-size: 15px; }
+html[data-theme="zine"] .dc-rnew { background: var(--teal); color: var(--z-ink); height: 28px; }
+html[data-theme="zine"] .dc-rback button { color: var(--z-ink); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+
+/* the closing card */
+html[data-theme="zine"] .dc-fantile { border: var(--z-out); box-shadow: var(--z-sh); }
+/* the last card in the feed is a card too: periwinkle, the colour All games opens in */
+html[data-theme="zine"] .dc-closing::before { content: ''; position: absolute; inset: 6px 12px 16px; border-radius: var(--r-card); border: var(--z-out); box-shadow: var(--z-sh); background: var(--peri); }
+html[data-theme="zine"] .dc-closein { position: relative; padding: 0 30px 24px; }
+html[data-theme="zine"] .dc-closein .t-body { color: var(--z-ink); }
+
+/* first open: one flood of yellow */
+html[data-theme="zine"] .screen.dc-onbscr { background: var(--sun); }
+html[data-theme="zine"] .dc-onbskip { color: var(--z-ink); font-weight: 600; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+html[data-theme="zine"] .dc-slide { gap: 26px; }
+html[data-theme="zine"] .dc-sstage { border: var(--z-out); box-shadow: var(--z-sh); background: #fff; }
+html[data-theme="zine"] .dc-sline { font-size: 36px; font-stretch: 78%; line-height: 1; min-height: 76px; }
+html[data-theme="zine"] .dc-dot { width: 10px; height: 10px; background: transparent; border: var(--z-out); }
+html[data-theme="zine"] .dc-dot.on { width: 26px; background: var(--z-ink); }
+html[data-theme="zine"] .dc-onbcta { padding: 0 24px 38px; }
+
+/* All games: a periwinkle header, tiles as cards */
+html[data-theme="zine"] .screen:has(> .dc-list) { background: var(--peri); }
+html[data-theme="zine"] .dc-lscroll { top: 106px; background: var(--paper); border-top: var(--z-out); }
+html[data-theme="zine"] .dc-search { margin: 4px 16px 12px; }
+html[data-theme="zine"] .dc-search input::placeholder { color: var(--mute2); font-weight: 500; }
+html[data-theme="zine"] .dc-clear { background: var(--z-ink); color: #fff; }
+html[data-theme="zine"] .dc-grid { gap: 20px 16px; }
+html[data-theme="zine"] .dc-tile:active { transform: none; }
+html[data-theme="zine"] .dc-cover { border: var(--z-out); box-shadow: var(--z-sh); margin-bottom: 12px; background: #fff; transition: var(--z-press); }
+html[data-theme="zine"] .dc-tile:active .dc-cover { transform: translate(4px, 4px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .dc-cpill { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--z-ink); border: 1.5px solid var(--z-ink); font-weight: 700; }
+html[data-theme="zine"] .dc-tname { font-family: var(--display); font-weight: 700; font-size: 18px; line-height: 1.15; }
+html[data-theme="zine"] .dc-tsub { font-weight: 500; color: var(--mute); }
+html[data-theme="zine"] .dc-emptyq { color: var(--z-ink); }
+html[data-theme="zine"] .dc-pbox { border: var(--z-out); background: #fff; }
+
+/* =====================================================================================
+   make: the mascot, the cards, the poster, the bench
+   ===================================================================================== */
+html[data-theme="zine"] .mk-link { font-weight: 600; color: var(--z-ink); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+html[data-theme="zine"] .mk-fine { font-weight: 500; color: var(--mute); }
+html[data-theme="zine"] .mk-dots i { background: var(--z-ink); }
+
+/* the mascot, redrawn as an outlined character: flat pink, ink line, no shading, no stars */
+html[data-theme="zine"] .mk-masc .skin,
+html[data-theme="zine"] .mk-masc .ear path,
+html[data-theme="zine"] .mk-masc .hands ellipse { fill: var(--pink); stroke: var(--z-ink); stroke-width: 2.6; stroke-linejoin: round; stroke-linecap: round; filter: none; }
+html[data-theme="zine"] .mk-masc .hands ellipse { fill: #fff; }
+html[data-theme="zine"] .mk-masc .lid { stroke: var(--pink); }
+html[data-theme="zine"] .mk-masc .eyes rect, html[data-theme="zine"] .mk-masc .oh { fill: var(--z-ink); }
+html[data-theme="zine"] .mk-masc .mouth, html[data-theme="zine"] .mk-masc .smile { stroke: var(--z-ink); stroke-width: 2.8; }
+html[data-theme="zine"] .mk-masc .think circle { fill: #fff; stroke: var(--z-ink); stroke-width: 2; }
+html[data-theme="zine"] .mk-masc .spark { display: none; }
+html[data-theme="zine"] .mk-masc.tiny .skin, html[data-theme="zine"] .mk-masc.tiny .ear path, html[data-theme="zine"] .mk-masc.tiny .hands ellipse { stroke-width: 5.5; }
+html[data-theme="zine"] .mk-dtalk > .mk-masc .skin, html[data-theme="zine"] .mk-dtalk > .mk-masc .ear path, html[data-theme="zine"] .mk-dtalk > .mk-masc .hands ellipse,
+html[data-theme="zine"] .pf-bhero .mk-masc .skin, html[data-theme="zine"] .pf-bhero .mk-masc .ear path, html[data-theme="zine"] .pf-bhero .mk-masc .hands ellipse { stroke-width: 3.2; }
+
+/* 1. the Make tab: a yellow header the idea box sits half inside */
+html[data-theme="zine"] .mk-root:has(> .mk-write), html[data-theme="zine"] .mk-root:has(> .mk-build), html[data-theme="zine"] .mk-root:has(> .mk-ready), html[data-theme="zine"] .mk-root:has(> .mk-ask) { background: var(--sun); }
+html[data-theme="zine"] .mk-write, html[data-theme="zine"] .mk-build, html[data-theme="zine"] .mk-ready, html[data-theme="zine"] .mk-askscroll { --edge: 186px; background: linear-gradient(to bottom, var(--sun) 0 var(--edge), var(--z-ink) var(--edge) calc(var(--edge) + 2px), var(--paper) calc(var(--edge) + 2px)) local; }
+html[data-theme="zine"] .mk-build { --edge: 150px; }
+html[data-theme="zine"] .mk-askscroll { --edge: 112px; }
+html[data-theme="zine"] .mk-head .energy { background: #fff; }
+html[data-theme="zine"] .mk-bubble { background: #fff; border: var(--z-out); border-radius: 18px; font-weight: 600; color: var(--z-ink); }
+html[data-theme="zine"] .mk-bubble::after { right: -7px; bottom: 13px; width: 12px; height: 12px; background: #fff; border: var(--z-out); border-left: 0; border-bottom: 0; clip-path: none; transform: rotate(45deg); box-sizing: border-box; }
+html[data-theme="zine"] .mk-mfield { background: #fff; border: var(--z-out); box-shadow: var(--z-sh); }
+html[data-theme="zine"] .mk-ta { font-weight: 500; color: var(--z-ink); caret-color: var(--z-ink); }
+html[data-theme="zine"] .mk-ta::placeholder { color: var(--mute2); }
+html[data-theme="zine"] .mk-mirror { font-weight: 500; }
+html[data-theme="zine"] .mk-actions { margin-top: 18px; }
+/* no sparkle on Inspire me */
+html[data-theme="zine"] .cta svg:has(> path[d^="M12 3l1.8 5.2"]) { display: none; }
+/* the Vibe role's icon is the same sparkle: where the browser can redraw a path from CSS it becomes a face, otherwise an outline */
+html[data-theme="zine"] .mk-root svg:has(> path[d^="M12 3l1.8 5.2"]) { fill: none; }
+html[data-theme="zine"] .mk-root svg > path[d^="M12 3l1.8 5.2"] { d: path("M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9 10h.01M15 10h.01M8.5 14.2a4.6 4.6 0 0 0 7 0"); }
+
+/* 2. Inspire me: a stack of paper cards */
+html[data-theme="zine"] .mk-sbox { background: #fff; border: 1.5px solid var(--z-ink); color: var(--z-ink); transition: background-color .2s var(--ease), box-shadow .12s var(--ease), transform .12s var(--ease); }
+html[data-theme="zine"] .mk-slot.kept .mk-sbox { background: var(--c); }
+html[data-theme="zine"] .mk-slot.skipped .mk-sbox { background: transparent; box-shadow: none; border: 1.5px dashed var(--mute2); }
+html[data-theme="zine"] .mk-slot.now .mk-sbox { box-shadow: var(--z-sh-s); transform: translate(-1px, -1px); }
+html[data-theme="zine"] .mk-flyer { box-shadow: none; border: var(--z-out); }
+html[data-theme="zine"] .mk-deck { margin: 10px 16px 0; }
+html[data-theme="zine"] .mk-card { border: var(--z-out); box-shadow: var(--z-sh); color: var(--z-ink); }
+html[data-theme="zine"] .mk-card:not(.top) { background: color-mix(in oklab, var(--c) 45%, #fff); }
+html[data-theme="zine"] .mk-card.reveal { background: var(--c); }
+html[data-theme="zine"] .mk-crole { height: 32px; background: #fff; border: var(--z-out); font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: 0; text-transform: none; }
+html[data-theme="zine"] .mk-cwm { opacity: .14; }
+html[data-theme="zine"] .mk-ctext { font-family: var(--display); font-weight: 800; font-stretch: 78%; font-size: 44px; line-height: .98; letter-spacing: -.02em; }
+html[data-theme="zine"] .mk-card .mk-caside { color: var(--z-ink); font-weight: 500; font-size: 15px; margin-top: 12px; }
+html[data-theme="zine"] .mk-stamp { height: 46px; background: #fff; border: 3px solid var(--z-ink); border-radius: 14px; box-shadow: 3px 3px 0 var(--z-ink); font-family: var(--display); font-weight: 800; font-size: 24px; letter-spacing: 0; text-transform: none; }
+html[data-theme="zine"] .mk-stamp.keep { transform: rotate(-8deg); }
+html[data-theme="zine"] .mk-stamp.skip { transform: rotate(8deg); }
+html[data-theme="zine"] .mk-card.mk-sum { --c: #fff; color: var(--z-ink); }
+html[data-theme="zine"] .mk-sumlist li { font-weight: 600; }
+html[data-theme="zine"] .mk-sumempty { color: var(--mute); }
+html[data-theme="zine"] .mk-chip { border: 1.5px solid var(--z-ink); color: var(--z-ink); }
+html[data-theme="zine"] .mk-chip.blank { background: var(--paper); color: var(--z-ink); }
+html[data-theme="zine"] .mk-rwrap { font-weight: 700; font-size: 13px; color: var(--z-ink); gap: 9px; }
+html[data-theme="zine"] .mk-round { background: #fff; border: var(--z-out); box-shadow: var(--z-sh); transition: var(--z-press); }
+html[data-theme="zine"] .mk-round:active { transform: translate(4px, 4px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .mk-skipb { color: var(--z-ink); }
+html[data-theme="zine"] .mk-keepb { background: var(--teal); color: var(--z-ink); }
+html[data-theme="zine"] .mk-skipb.hot { background: var(--z-ink); color: #fff; transform: scale(1.1); }
+html[data-theme="zine"] .mk-keepb.hot { background: var(--teal); color: var(--z-ink); transform: scale(1.1); }
+
+/* 3. quick picks: the mascot holds up a card */
+html[data-theme="zine"] .mk-qcard { background: #fff; border: var(--z-out); box-shadow: var(--z-sh); color: var(--z-ink); }
+html[data-theme="zine"] .mk-qtitle { color: var(--z-ink); }
+html[data-theme="zine"] .mk-picked { display: inline-block; margin-top: 10px; padding: 3px 12px; border-radius: 999px; background: var(--lemon); border: var(--z-out); font-family: var(--display); font-weight: 700; color: var(--z-ink); }
+html[data-theme="zine"] .mk-opts { gap: 12px; margin-top: 22px; }
+html[data-theme="zine"] .mk-opt { background: #fff; border: var(--z-out); box-shadow: var(--z-sh); font-family: var(--display); font-weight: 700; color: var(--z-ink); transition: var(--z-press); }
+html[data-theme="zine"] .mk-opt:active { transform: translate(4px, 4px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .mk-opt.chosen { background: var(--lemon); transform: translate(4px, 4px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .mk-ack { font-family: var(--display); font-weight: 700; color: var(--z-ink); }
+
+/* 4. the proposal: a poster with an ink edge */
+html[data-theme="zine"] .mk-foot { padding: 16px 16px 30px; background: var(--paper); border-top: var(--z-out); }
+html[data-theme="zine"] .mk-footline .energy { background: var(--sun); box-shadow: none; height: 30px; }
+html[data-theme="zine"] .mk-footline .energy svg:has(> path[d^="M13 2 4 14"]) { fill: #fff; }
+html[data-theme="zine"] .mk-propscroll { padding: 4px 18px 250px; }
+html[data-theme="zine"] .mk-poster { border: var(--z-out); box-shadow: var(--z-sh); color: var(--z-ink); }
+html[data-theme="zine"] .mk-poster::before, html[data-theme="zine"] .mk-poster::after { box-sizing: border-box; left: -10px; right: -10px; height: 16px; background: #fff; border: var(--z-out); }
+html[data-theme="zine"] .mk-poster::before { top: -9px; }
+html[data-theme="zine"] .mk-poster::after { bottom: -9px; }
+html[data-theme="zine"] .mk-ptag { opacity: 1; font-weight: 700; font-size: 13px; }
+html[data-theme="zine"] .mk-pname { font-family: var(--display); font-weight: 800; font-stretch: 78%; font-size: 40px; line-height: .98; letter-spacing: -.02em; margin: 8px 0 12px; }
+html[data-theme="zine"] .mk-ppara { font-weight: 500; }
+html[data-theme="zine"] .mk-pbul li { border-top: var(--z-out); }
+html[data-theme="zine"] .mk-pbul b { font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: 0; text-transform: none; opacity: 1; }
+html[data-theme="zine"] .mk-pbul span { font-weight: 500; }
+html[data-theme="zine"] .mk-pmasc.unroll .mk-poster { animation-name: zineUnroll; }
+@keyframes zineUnroll { from { clip-path: inset(-12px -12px 100% -12px); } to { clip-path: inset(-12px -12px -12px -12px); } }
+html[data-theme="zine"] .mk-say { background: #fff; border: var(--z-out); font-weight: 600; color: var(--z-ink); }
+html[data-theme="zine"] .mk-roll { border: var(--z-out); box-shadow: none; }
+html[data-theme="zine"] .mk-pending { font-weight: 600; color: var(--mute); }
+
+/* 4b. the game plan */
+html[data-theme="zine"] .mk-plan { background: #fff; border: var(--z-out); }
+html[data-theme="zine"] .mk-sk { background: var(--paper2); }
+html[data-theme="zine"] .mk-field { color: var(--z-ink); caret-color: var(--z-ink); font-weight: 500; }
+html[data-theme="zine"] .mk-field:focus { background: var(--lemon); }
+html[data-theme="zine"] .mk-field::placeholder { color: var(--mute2); font-weight: 500; }
+html[data-theme="zine"] .mk-fname { font-family: var(--display); font-weight: 800; font-stretch: 80%; font-size: 34px; line-height: 36px; letter-spacing: -.015em; }
+html[data-theme="zine"] .mk-fpara { font-weight: 500; color: var(--z-ink); }
+html[data-theme="zine"] .mk-lx { color: var(--z-ink); }
+html[data-theme="zine"] .mk-lx:active { background: var(--paper2); color: var(--z-ink); }
+html[data-theme="zine"] .mk-addline { font-weight: 600; color: var(--z-ink); }
+html[data-theme="zine"] .mk-addline:active { background: var(--lemon); }
+
+/* 6. making: the mascot at its bench, on squared paper */
+html[data-theme="zine"] .mk-bench { background: #fff; border: var(--z-out); }
+html[data-theme="zine"] .mk-grid-bg { background-image: repeating-linear-gradient(0deg, rgba(0,0,0,.09) 0 1px, transparent 1px 22px), repeating-linear-gradient(90deg, rgba(0,0,0,.09) 0 1px, transparent 1px 22px); }
+html[data-theme="zine"] .mk-desk { border: var(--z-out); border-bottom: 0; box-shadow: none; }
+html[data-theme="zine"] .mk-bit { width: 9px; height: 9px; border: 1.5px solid var(--z-ink); background: var(--sun); }
+html[data-theme="zine"] .mk-bit.b2 { background: var(--pink); }
+html[data-theme="zine"] .mk-eta { font-family: var(--display); font-weight: 800; font-stretch: 85%; font-size: 26px; letter-spacing: -.01em; }
+html[data-theme="zine"] .mk-now { font-weight: 500; color: var(--mute); }
+html[data-theme="zine"] .mk-bar { height: 14px; background: #fff; border: var(--z-out); }
+html[data-theme="zine"] .mk-bar i { border-radius: 0; background: var(--pink); border-right: var(--z-out); box-sizing: content-box; }
+html[data-theme="zine"] .mk-retry { background: var(--lemon); border: var(--z-out); }
+html[data-theme="zine"] .mk-retry span { color: var(--z-ink); font-weight: 500; }
+html[data-theme="zine"] .mk-minis { gap: 16px; padding: 0 20px 6px 16px; scroll-padding: 0 16px; }
+html[data-theme="zine"] .mk-mini:active { transform: none; }
+html[data-theme="zine"] .mk-mini .stage { border: var(--z-out); box-shadow: var(--z-sh); margin-bottom: 10px; transition: var(--z-press); }
+html[data-theme="zine"] .mk-mini:active .stage { transform: translate(4px, 4px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .mk-mini b { font-family: var(--display); font-weight: 700; font-size: 15px; }
+html[data-theme="zine"] .mk-mini small { font-weight: 500; color: var(--mute); }
+html[data-theme="zine"] .mk-steps { background: #fff; border: var(--z-out); padding: 0; overflow: hidden; }
+html[data-theme="zine"] .mk-step { padding: 12px 14px; font-weight: 600; }
+html[data-theme="zine"] .mk-step + .mk-step { border-top: var(--z-out); }
+html[data-theme="zine"] .mk-step.todo { color: var(--mute); font-weight: 500; }
+html[data-theme="zine"] .mk-step.now { font-weight: 700; background: var(--lemon); }
+html[data-theme="zine"] .mk-tick { box-shadow: none; border: var(--z-out); color: var(--z-ink); background: #fff; }
+html[data-theme="zine"] .done > .mk-tick, html[data-theme="zine"] .mk-pubrow.done .mk-tick { background: var(--teal); box-shadow: none; }
+html[data-theme="zine"] .now > .mk-tick, html[data-theme="zine"] .mk-pubrow.now .mk-tick { box-shadow: none; }
+html[data-theme="zine"] .mk-step.now > .mk-tick::after, html[data-theme="zine"] .mk-pubrow.now .mk-tick::after { background: var(--z-ink); }
+html[data-theme="zine"] .mk-pubrow.todo { opacity: 1; }
+html[data-theme="zine"] .mk-pubrow.todo .t-row { color: var(--mute); }
+html[data-theme="zine"] .mk-pubrow.todo .em { opacity: .45; }
+html[data-theme="zine"] .mk-failcard { background: #fff; border: var(--z-out); }
+html[data-theme="zine"] .mk-failcard .t-body { color: var(--mute); }
+html[data-theme="zine"] .mk-energyback { font-weight: 700; color: var(--tealText); }
+html[data-theme="zine"] .mk-away { background: #fff; border: var(--z-out); padding: 16px 16px 20px; }
+html[data-theme="zine"] .mk-away .t-body { color: var(--z-ink); }
+
+/* 7. ready, played, publishing */
+html[data-theme="zine"] .mk-pitch { color: var(--mute); }
+html[data-theme="zine"] .mk-ready .mk-pad > .stage { border: var(--z-out); box-shadow: var(--z-sh); cursor: pointer; transition: var(--z-press); }
+html[data-theme="zine"] .mk-ready .mk-pad > .stage:active { transform: translate(4px, 4px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .mk-gname { margin: 20px 4px 16px; }
+html[data-theme="zine"] .mk-host { border: var(--z-out); }
+html[data-theme="zine"] .mk-resbox { background: #fff; border: var(--z-out); box-shadow: var(--z-sh); padding: 18px 18px 22px; }
+
+/* =====================================================================================
+   profile and settings
+   ===================================================================================== */
+html[data-theme="zine"] .pf-root { background: var(--pink); }
+html[data-theme="zine"] .pf-bar { background: var(--pink); }
+html[data-theme="zine"] .pf-scroll { background: var(--paper); }
+html[data-theme="zine"] .pf-head { background: var(--pink); border-bottom: var(--z-out); padding: 6px 20px 22px; }
+html[data-theme="zine"] .pf-gear { color: var(--z-ink); }
+html[data-theme="zine"] .pf-barname { font-family: var(--display); font-weight: 700; font-size: 17px; }
+html[data-theme="zine"] .pf-avatar { border: var(--z-out); box-shadow: var(--z-sh); font-family: var(--display); font-weight: 800; font-size: 42px; color: #000; transition: var(--z-press); }
+html[data-theme="zine"] .pf-avatar:active { transform: translate(4px, 4px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .pf-name { margin-top: 16px; font-weight: 800; font-size: 36px; font-stretch: 78%; letter-spacing: -.02em; line-height: 1.05; }
+html[data-theme="zine"] .pf-name:active { transform: translate(1px, 2px); }
+html[data-theme="zine"] .pf-hint { color: var(--z-ink); }
+html[data-theme="zine"] .pf-stat b { font-family: var(--display); font-weight: 800; font-stretch: 80%; font-size: 28px; line-height: 1.05; }
+html[data-theme="zine"] .pf-stat span { font-weight: 600; font-size: 13px; color: var(--z-ink); }
+html[data-theme="zine"] .pf-tabs { background: var(--paper); border-bottom: var(--z-out); }
+html[data-theme="zine"] .pf-tab { height: 48px; color: var(--mute); }
+html[data-theme="zine"] .pf-tab.on { color: var(--z-ink); }
+html[data-theme="zine"] .pf-tab.on svg { fill: var(--pink); }
+html[data-theme="zine"] .pf-ind { bottom: -2px; height: 5px; }
+html[data-theme="zine"] .pf-ind::after { width: 44px; height: 5px; border-radius: 0; background: var(--z-ink); }
+html[data-theme="zine"] .pf-panel { padding-top: 16px; }
+html[data-theme="zine"] .pf-grid { gap: 12px 10px; }
+html[data-theme="zine"] .pf-tile { border: var(--z-out); box-shadow: var(--z-sh-s); background: #fff; transition: var(--z-press); }
+html[data-theme="zine"] .pf-tile:active { transform: translate(2px, 2px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .pf-shade { display: none; }
+html[data-theme="zine"] .pf-count { left: 6px; bottom: 6px; height: 22px; padding: 0 7px; border-radius: 999px; background: #fff; border: 1.5px solid var(--z-ink); color: var(--z-ink); font-family: var(--display); font-weight: 700; font-size: 12px; }
+html[data-theme="zine"] .pf-build { background: #fff; box-shadow: var(--z-sh-s); }
+html[data-theme="zine"] .pf-bhero { color: var(--z-ink); }
+/* no sparkle: the tile shows the mascot's head, drawn in the same ink line */
+html[data-theme="zine"] .pf-bhero[data-kind="icon"] > svg { display: none; }
+html[data-theme="zine"] .pf-bhero[data-kind="icon"]::before { content: ''; width: 62px; height: 52px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 80'%3E%3Cg fill='%23ff90e8' stroke='%23000' stroke-width='3.4' stroke-linejoin='round'%3E%3Cpath d='M24 26 18 4l20 14z'/%3E%3Cpath d='M72 26 78 4 58 18z'/%3E%3Cpath d='M10 46c0-20 16-32 38-32s38 12 38 32c0 18-16 28-38 28S10 64 10 46z'/%3E%3C/g%3E%3Crect x='31' y='37' width='9' height='10' rx='4.5'/%3E%3Crect x='56' y='37' width='9' height='10' rx='4.5'/%3E%3Cpath d='M42 58h12' stroke='%23000' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat; }
+html[data-theme="zine"] .pf-build.failed .pf-bhero::before { filter: grayscale(.7); transform: rotate(-8deg); }
+html[data-theme="zine"] .pf-btitle { font-family: var(--display); font-weight: 700; }
+html[data-theme="zine"] .pf-bsub { font-weight: 500; color: var(--mute); }
+html[data-theme="zine"] .pf-bbar { height: 8px; left: 10px; right: 10px; bottom: 10px; background: #fff; border: 1.5px solid var(--z-ink); }
+html[data-theme="zine"] .pf-bbar i { border-radius: 0; background: var(--pink); }
+html[data-theme="zine"] .pf-build.failed .pf-btitle { color: var(--redText); }
+html[data-theme="zine"] .pf-build.failed .pf-bbar i { background: var(--red); }
+html[data-theme="zine"] .pf-cover { border: var(--z-out); }
+html[data-theme="zine"] .pf-group { background: var(--peri); color: var(--z-ink); border: var(--z-out); }
+html[data-theme="zine"] .pf-host { border: var(--z-out); background: #fff; }
+html[data-theme="zine"] .pf-res { background: #fff; border: var(--z-out); box-shadow: var(--z-sh); padding: 18px 18px 22px; }
+html[data-theme="zine"] .pf-val { font-family: var(--font); font-weight: 600; color: var(--mute); }
+html[data-theme="zine"] .pf-energyrow .pf-val { font-family: var(--display); font-weight: 700; color: var(--z-ink); }
+html[data-theme="zine"] .pf-blue .t-row { color: var(--z-ink); font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+html[data-theme="zine"] .pf-red .t-row { color: var(--redText); font-weight: 700; }
+
+/* the switch: an outlined track and an ink knob; on is teal */
+html[data-theme="zine"] .pf-track { background: #fff; border: var(--z-out); }
+html[data-theme="zine"] .pf-knob { top: 5px; left: 5px; width: 21px; height: 21px; background: var(--z-ink); box-shadow: none; }
+html[data-theme="zine"] .pf-switch input:checked ~ .pf-track { background: var(--teal); }
+html[data-theme="zine"] .pf-switch input:checked ~ .pf-knob { background: #fff; border: var(--z-out); transform: translateX(20px); }
+html[data-theme="zine"] .pf-switch input:active ~ .pf-knob { width: 26px; }
+html[data-theme="zine"] .pf-switch input:checked:active ~ .pf-knob { transform: translateX(15px); }
+html[data-theme="zine"] .pf-switch input:focus-visible ~ .pf-track { outline: 3px solid var(--z-ink); outline-offset: 2px; }
+
+/* the energy sheet */
+html[data-theme="zine"] .pf-packs { margin-bottom: 20px; }
+html[data-theme="zine"] .pf-pack.on { background: var(--lemon); transform: translate(2px, 2px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .pf-pack .pf-val { color: var(--z-ink); font-family: var(--display); font-weight: 700; }
+html[data-theme="zine"] .pf-root button:focus-visible, html[data-theme="zine"] .pf-page button:focus-visible, html[data-theme="zine"] .pf-pack:focus-visible { outline: 3px solid var(--z-ink); outline-offset: 3px; }
+
+/* =====================================================================================
+   share: only what Mapi draws inside Messages
+   ===================================================================================== */
+/* Messages' own chrome keeps its look where shared classes would leak */
+html[data-theme="zine"] .sh-list .screen-title { font-family: var(--font); font-weight: 900; font-size: 34px; font-stretch: normal; letter-spacing: -.6px; line-height: normal; padding: 46px 20px 14px; }
+html[data-theme="zine"] .sh-note .closebtn { width: 26px; height: 26px; background: #2c2c2e; color: #d8d8dc; border: 0; box-shadow: none; }
+html[data-theme="zine"] .sh-note .closebtn:active { transform: scale(.88); background: #3a3a3d; }
+
+/* the game bubble: a paper card. Yours is pink. */
+html[data-theme="zine"] .sh-mb { background: #fff; color: var(--z-ink); border: var(--z-out); }
+html[data-theme="zine"] .sh-mb.out { background: var(--pink); color: var(--z-ink); }
+html[data-theme="zine"] .sh-mb-img { border-bottom: var(--z-out); background: #fff; }
+html[data-theme="zine"] .sh-mb-c1 { font-family: var(--display); font-weight: 700; font-size: 16px; }
+html[data-theme="zine"] .sh-mb-c2 { font-weight: 500; color: var(--mute); }
+html[data-theme="zine"] .sh-mb.out .sh-mb-c2 { color: var(--z-ink); }
+html[data-theme="zine"] .sh-mb-app { font-weight: 600; color: var(--mute); }
+html[data-theme="zine"] .sh-mb.out .sh-mb-app { color: var(--z-ink); }
+html[data-theme="zine"] .sh-mb .sh-glyph, html[data-theme="zine"] .sh-ph .sh-glyph { background: var(--sun); color: #000; border: 1px solid #000; font-family: var(--display); font-weight: 800; }
+/* the score is a plate over the art, not white type with a soft shadow */
+html[data-theme="zine"] .sh-mb-img .sh-mb-score { right: 8px; bottom: 8px; padding: 2px 10px 4px; border-radius: 14px; background: var(--sun); border: var(--z-out); color: var(--z-ink); text-shadow: none; font-family: var(--display); font-weight: 800; font-stretch: 78%; font-size: 46px; letter-spacing: -.02em; }
+html[data-theme="zine"] .sh-relay span { background: #fff; color: var(--z-ink); border: 1.5px solid var(--z-ink); font-weight: 700; }
+html[data-theme="zine"] .sh-relay span.me { background: var(--sun); color: var(--z-ink); }
+html[data-theme="zine"] .sh-relay span.wait { background: var(--z-ink); color: #fff; }
+html[data-theme="zine"] .sh-fly { box-shadow: none; }
+
+/* taunt chips */
+html[data-theme="zine"] .sh-chip { height: 36px; background: #fff; color: var(--z-ink); border: var(--z-out); box-shadow: var(--z-sh-s); font-weight: 700; transition: var(--z-press); }
+html[data-theme="zine"] .sh-chip:active { transform: translate(2px, 2px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .sh-chip.on { background: var(--lemon); color: var(--z-ink); transform: translate(2px, 2px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .sh-chip.mini { height: 30px; }
+html[data-theme="zine"] .sh-taunts .sh-chip { box-shadow: none; }
+html[data-theme="zine"] .sh-taunts .sh-chip.on, html[data-theme="zine"] .sh-taunts .sh-chip:active { transform: none; }
+
+/* the Mapi panel */
+html[data-theme="zine"] .sh-panel { background: var(--paper); border-top: var(--z-out); color: var(--z-ink); font-family: var(--font); }
+html[data-theme="zine"] .sh-panel.large { box-shadow: none; }
+html[data-theme="zine"] .sh-ph { height: 50px; border-bottom: var(--z-out); font-family: var(--display); font-weight: 700; font-size: 17px; }
+html[data-theme="zine"] .sh-ph .lead, html[data-theme="zine"] .sh-ph .trail { top: 8px; }
+html[data-theme="zine"] .sh-panel .sec { padding: 20px 16px 10px; }
+html[data-theme="zine"] .sh-grid { gap: 14px 12px; }
+html[data-theme="zine"] .sh-tile:active { transform: none; }
+html[data-theme="zine"] .sh-tile .art { border: var(--z-out); box-shadow: var(--z-sh-s); background: #fff; transition: var(--z-press); }
+html[data-theme="zine"] .sh-tile:active .art { transform: translate(2px, 2px); box-shadow: var(--z-sh-0); }
+html[data-theme="zine"] .sh-tile b { font-family: var(--display); font-weight: 700; font-size: 14px; }
+html[data-theme="zine"] .sh-pempty { background: #fff; border: var(--z-out); font-weight: 500; color: var(--mute); }
+html[data-theme="zine"] .sh-allbtn { margin: 20px 16px 24px; }
+html[data-theme="zine"] .sh-pad { padding: 16px 16px 20px; }
+html[data-theme="zine"] .sh-pad .stage { border: var(--z-out); }
+html[data-theme="zine"] .sh-vs { background: #fff; border: var(--z-out); }
+html[data-theme="zine"] .sh-panel .sh-av, html[data-theme="zine"] .sh-clip .sh-av { border: 1.5px solid var(--z-ink); color: #000; font-family: var(--display); font-weight: 800; }
+html[data-theme="zine"] .sh-vs .num { font-weight: 800; font-stretch: 80%; font-size: 32px; }
+html[data-theme="zine"] .sh-host { background: var(--paper); }
+html[data-theme="zine"] .sh-res { gap: 18px; }
+html[data-theme="zine"] .sh-rescard { background: #fff; border: var(--z-out); box-shadow: var(--z-sh); }
+html[data-theme="zine"] .sh-rescard .art { border-bottom: var(--z-out); }
+html[data-theme="zine"] .sh-res-line { font-family: var(--display); font-weight: 800; font-stretch: 85%; font-size: 26px; line-height: 1.1; letter-spacing: -.01em; }
+html[data-theme="zine"] .sh-res-sub { font-weight: 500; color: var(--mute); }
+html[data-theme="zine"] .sh-tally { background: #fff; border: var(--z-out); }
+html[data-theme="zine"] .sh-tally .side b { font-family: var(--display); font-weight: 800; font-stretch: 78%; font-size: 46px; color: var(--mute); }
+html[data-theme="zine"] .sh-tally .side span { font-weight: 600; color: var(--z-ink); }
+html[data-theme="zine"] .sh-tally .side.lead b { color: var(--z-ink); }
+html[data-theme="zine"] .sh-tally .mid { font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: 0; text-transform: none; color: var(--mute); }
+html[data-theme="zine"] .sh-rank { background: #fff; border: var(--z-out); padding: 0; overflow: hidden; }
+html[data-theme="zine"] .sh-rank .r { padding: 0 14px; min-height: 44px; }
+html[data-theme="zine"] .sh-rank .r + .r { border-top: var(--z-out); }
+html[data-theme="zine"] .sh-rank .r .n { color: var(--mute); font-family: var(--display); font-weight: 700; }
+html[data-theme="zine"] .sh-rank .r .who { font-weight: 600; }
+html[data-theme="zine"] .sh-rank .r .sc { font-family: var(--display); font-weight: 800; font-size: 18px; }
+html[data-theme="zine"] .sh-rank .r.me { background: var(--lemon); }
+html[data-theme="zine"] .sh-rank .r.me .who, html[data-theme="zine"] .sh-rank .r.me .sc { color: var(--z-ink); font-weight: 800; }
+html[data-theme="zine"] .sh-rank .r.wait .who, html[data-theme="zine"] .sh-rank .r.wait .sc { color: var(--mute2); }
+html[data-theme="zine"] .sh-rank .r.me.wait .who, html[data-theme="zine"] .sh-rank .r.me.wait .sc { color: var(--z-ink); }
+html[data-theme="zine"] .sh-craft { padding: 18px 16px 20px; }
+html[data-theme="zine"] .sh-craft .input { background: #fff; }
+html[data-theme="zine"] .sh-craft .input::placeholder { color: var(--mute2); }
+html[data-theme="zine"] .sh-label { font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--z-ink); }
+html[data-theme="zine"] .sh-fine { font-weight: 500; color: var(--mute); }
+
+/* the "Send to" sheet, the ping ask */
+html[data-theme="zine"] .sh-sendrow { font-family: var(--display); font-weight: 700; color: var(--z-ink); padding: 12px 4px; transition: background-color .15s var(--ease); }
+html[data-theme="zine"] .sh-sendrow + .sh-sendrow { border-top: var(--z-out); }
+html[data-theme="zine"] .sh-sendrow:active { transform: none; background: var(--lemon); }
+html[data-theme="zine"] .sh-sendrow .tx span { font-family: var(--font); font-weight: 500; color: var(--mute); }
+html[data-theme="zine"] .sh-sendrow > svg { color: var(--z-ink); }
+html[data-theme="zine"] .sh-sendrow .sh-av { background: var(--paper2); border: var(--z-out); color: #000; font-family: var(--display); font-weight: 800; }
+html[data-theme="zine"] .sh-sendrow .sh-cluster .sh-av { border-color: var(--z-ink); border-width: 1.5px; }
+html[data-theme="zine"] .sh-ask .bell { background: var(--sun); color: var(--z-ink); border: var(--z-out); }
+
+/* the App Clip Mapi runs in */
+html[data-theme="zine"] .sh-clip { color: var(--z-ink); font-family: var(--font); }
+html[data-theme="zine"] .sh-clipbar { font-family: var(--display); font-weight: 700; font-size: 17px; }
+html[data-theme="zine"] .sh-clipbar .lead { top: 6px; }
+html[data-theme="zine"] .sh-clipbar .tag { background: var(--lemon); color: var(--z-ink); }
+/* Mapi's icon, wherever iOS shows it */
+html[data-theme="zine"] .sh-appicon, html[data-theme="zine"] .sh-dapp .ic.mapi { background: #ffc900; color: #000; border: 2px solid #000; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; }
+
+/* the App Clip card and the App Store sheet are iOS's: put the system sheet and its buttons back */
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-cliparts),
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-store) { left: 0; right: 0; bottom: 0; max-height: 70%; padding: 18px 20px 40px; border-radius: 28px 28px 0 0; background: var(--sheetInk); color: var(--text); border: 0; box-shadow: 0 -10px 40px rgba(0,0,0,.3); transform: translateY(104%); }
+html[data-theme="zine"] #layer-sheet .sheet.on:has(.sh-cliparts), html[data-theme="zine"] #layer-sheet .sheet.on:has(.sh-store) { transform: none; }
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-cliparts, .sh-store) .grab { width: 36px; height: 5px; margin: -6px auto 14px; background: #48484a; }
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-cliparts, .sh-store) .cta { border: 0; border-radius: 18px; box-shadow: none; font-weight: 900; font-size: 16px; transition: transform .16s var(--spring), filter .16s var(--spring); }
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-cliparts, .sh-store) .cta.btn { height: 56px; border-radius: 19px; font-size: 17px; }
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-cliparts, .sh-store) .cta:active { transform: scale(.955); filter: brightness(.94); box-shadow: none; }
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-cliparts, .sh-store) .cta.white { background: #fff; color: #111; }
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-cliparts, .sh-store) .cta.blue { background: #3f8cf2; color: #fff; }
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-cliparts, .sh-store) .t-hero { font-weight: 900; font-size: 19px; letter-spacing: 0; line-height: 1.25; }
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-cliparts, .sh-store) .t-row { font-weight: 800; }
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-cliparts, .sh-store) .t-sub { font-weight: 700; }
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-cliparts, .sh-store) .sbody { margin: 0; padding: 0; }
+html[data-theme="zine"] #layer-sheet .sheet:has(.sh-cliparts, .sh-store) svg:has(> path[d^="M13 2 4 14"]) { fill: currentColor; stroke: currentColor; }
+
+/* ---------- reduced motion: presses still read (the shadow goes), nothing slides ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="zine"] .cta, html[data-theme="zine"] .mk-opt, html[data-theme="zine"] .mk-round, html[data-theme="zine"] .closebtn, html[data-theme="zine"] .circ,
+  html[data-theme="zine"] .pill, html[data-theme="zine"] .sh-chip, html[data-theme="zine"] .srow, html[data-theme="zine"] .energy, html[data-theme="zine"] .followbtn,
+  html[data-theme="zine"] .pf-tile, html[data-theme="zine"] .pf-avatar, html[data-theme="zine"] .dc-cover, html[data-theme="zine"] .dc-hstage,
+  html[data-theme="zine"] .mk-mini .stage, html[data-theme="zine"] .sh-tile .art, html[data-theme="zine"] .tabbar .tab.make .plus { transition-duration: .01s !important; }
+}
